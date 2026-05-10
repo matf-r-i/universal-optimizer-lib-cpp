@@ -26,8 +26,13 @@ SaOptimizer::SaOptimizer(
     , sa_temperature_(std::move(sa_temperature)) {}
 
 std::unique_ptr<Optimizer> SaOptimizer::clone() const {
-    auto cloned = std::make_unique<SaOptimizer>(
-        nullptr, nullptr,
+    std::unique_ptr<SaNeighborhood> cloned_neighborhood = 
+        sa_neighborhood_ ? sa_neighborhood_->clone() : nullptr;
+    std::unique_ptr<SaTemperature> cloned_temperature = 
+        sa_temperature_ ? sa_temperature_->clone() : nullptr;
+    return std::make_unique<SaOptimizer>(
+        std::move(cloned_neighborhood),
+        std::move(cloned_temperature),
         finish_control(),
         problem().clone(),
         solution_template() ? solution_template()->clone() : nullptr,
@@ -35,18 +40,20 @@ std::unique_ptr<Optimizer> SaOptimizer::clone() const {
         random_seed(),
         additional_statistics_control()
     );
-    return cloned;
 }
 
 void SaOptimizer::init() {
-    // Call Algorithm::init() instead of Metaheuristic::init() which is pure virtual
     Algorithm::init();
     if (solution_template()) {
         auto sol = solution_template()->clone();
         sol->init_random(problem());
         set_current_solution(std::move(sol));
+        set_evaluation(1);
+        if (current_solution()) {
+            current_solution_->evaluate(problem());
+            set_best_solution(current_solution_->clone());
+        }
     }
-    set_evaluation(1);
     set_iteration(0);
 }
 
@@ -55,23 +62,34 @@ void SaOptimizer::main_loop_iteration() {
     increment_iteration();
 
     if (!current_solution()) return;
+
+    // Generate a new neighbor solution (does evaluation inside)
     auto neighbor = sa_neighborhood_->generate_neighbor(
         *current_solution_, problem(), this);
     if (!neighbor) return;
 
-    neighbor->evaluate(problem());
-
-    auto cmp = current_solution_->is_better_than(*neighbor, problem());
-    bool neighbor_is_better = cmp.has_value() && !cmp.value();
+    // Compare solutions using is_better_than
+    // returns: true if this is better than other, false if other is better, nullopt if equal
+    auto cmp = neighbor->is_better_than(*current_solution_, problem());
+    bool neighbor_is_better = cmp.has_value() && cmp.value();
 
     if (neighbor_is_better) {
+        // Neighbor is better - accept it
         set_current_solution(std::move(neighbor));
+        if (best_solution_ 
+            && current_solution_->is_better_than(*best_solution_, problem()).has_value() 
+            && current_solution_->is_better_than(*best_solution_, problem()).value()) {
+            set_best_solution(current_solution_->clone());
+        }
     } else {
+        // Neighbor is worse or equal - accept with probability based on temperature
         std::uniform_real_distribution<double> dist(0.0, 1.0);
         if (dist(rng_) < current_temp) {
             set_current_solution(std::move(neighbor));
         }
     }
+
+    // Increment evaluation counter (Python matches: one increment per iteration)
     increment_evaluation();
 }
 

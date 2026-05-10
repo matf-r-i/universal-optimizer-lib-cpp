@@ -13,11 +13,15 @@ class SaNeighborhood {
 public:
     virtual ~SaNeighborhood() = default;
 
+    [[nodiscard]] virtual std::unique_ptr<SaNeighborhood> clone() const = 0;
+
     [[nodiscard]] virtual std::unique_ptr<ISolution> generate_neighbor(
         const ISolution& current,
         const Problem& problem,
         const Metaheuristic* optimizer = nullptr) const = 0;
 
+    [[nodiscard]] virtual int dimension() const noexcept = 0;
+    [[nodiscard]] virtual int k() const noexcept = 0;
     [[nodiscard]] virtual std::string to_string() const = 0;
 };
 

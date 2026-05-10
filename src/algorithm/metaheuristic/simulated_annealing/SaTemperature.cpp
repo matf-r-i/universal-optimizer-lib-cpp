@@ -4,6 +4,10 @@
 
 namespace uo {
 
+std::unique_ptr<SaTemperature> SaTemperatureConst::clone() const {
+    return std::make_unique<SaTemperatureConst>(temperature_);
+}
+
 std::string SaTemperatureConst::to_string() const {
     std::ostringstream oss;
     oss << "SaTemperatureConst{temperature=" << temperature_ << "}";
@@ -13,8 +17,13 @@ std::string SaTemperatureConst::to_string() const {
 SaTemperatureLinear::SaTemperatureLinear(double initial, double final, int max_iterations)
     : initial_(initial), final_(final), max_iterations_(max_iterations) {}
 
+std::unique_ptr<SaTemperature> SaTemperatureLinear::clone() const {
+    return std::make_unique<SaTemperatureLinear>(initial_, final_, max_iterations_);
+}
+
 double SaTemperatureLinear::calculate(int iteration) const {
     if (max_iterations_ <= 0) return initial_;
+    if (iteration >= max_iterations_) return final_;
     double t = static_cast<double>(iteration) / max_iterations_;
     return initial_ - t * (initial_ - final_);
 }
@@ -29,6 +38,10 @@ std::string SaTemperatureLinear::to_string() const {
 
 SaTemperatureExponential::SaTemperatureExponential(double initial, double cooling_rate)
     : initial_(initial), cooling_rate_(cooling_rate) {}
+
+std::unique_ptr<SaTemperature> SaTemperatureExponential::clone() const {
+    return std::make_unique<SaTemperatureExponential>(initial_, cooling_rate_);
+}
 
 double SaTemperatureExponential::calculate(int iteration) const {
     return initial_ * std::pow(cooling_rate_, iteration);
