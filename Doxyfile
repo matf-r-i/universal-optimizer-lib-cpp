@@ -1,0 +1,14 @@
+﻿# Doxyfile for Universal Optimizer C++ Library
+
+PROJECT_NAME           = "Universal Optimizer Library (C++)"
+PROJECT_NUMBER         = 0.3.0
+PROJECT_BRIEF          = "C++ optimization algorithms library"
+OUTPUT_DIRECTORY       = docs
+INPUT                  = include/ src/
+RECURSIVE              = YES
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+GENERATE_LATEX         = NO
+GENERATE_TREEVIEW      = YES
+USE_MDFILE_AS_MAINPAGE = README.md
