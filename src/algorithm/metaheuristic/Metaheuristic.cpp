@@ -23,6 +23,10 @@ Metaheuristic::Metaheuristic(
     rng_.seed(random_seed_);
 }
 
+void Metaheuristic::init() {
+    Algorithm::init();
+}
+
 void Metaheuristic::main_loop() {
     while (!should_finish()) {
         main_loop_iteration();
@@ -33,11 +37,28 @@ std::unique_ptr<ISolution> Metaheuristic::optimize() {
     init();
     main_loop();
     set_execution_ended(std::chrono::system_clock::now());
-    return nullptr; // Placeholder - would return best_solution
+    return best_solution_ ? best_solution_->clone() : nullptr;
 }
 
 bool Metaheuristic::should_finish() const {
     return finish_control_.is_finished(evaluation(), iteration(), elapsed_seconds());
+}
+
+void Metaheuristic::write_output_values_if_needed(const std::string& moment, const std::string& step) {
+    (void)moment;
+    (void)step;
+}
+
+void Metaheuristic::update_additional_statistics_if_required(const ISolution& solution) {
+    if (additional_statistics_control_) {
+        additional_statistics_control_->add_to_all_solution_codes(solution.to_string());
+        if (best_solution_) {
+            additional_statistics_control_->add_to_more_local_optima(
+                solution.to_string(),
+                solution.fitness_value(),
+                best_solution_->to_string());
+        }
+    }
 }
 
 std::string Metaheuristic::to_string() const {

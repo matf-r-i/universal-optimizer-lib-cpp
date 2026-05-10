@@ -32,7 +32,7 @@ public:
 
     [[nodiscard]] std::unique_ptr<Optimizer> clone() const override = 0;
 
-    void init() override = 0;
+    void init() override;
     virtual void main_loop_iteration() = 0;
     virtual void main_loop();
     std::unique_ptr<ISolution> optimize() override;
@@ -51,10 +51,37 @@ public:
     }
 
     [[nodiscard]] bool should_finish() const;
+
+    //@{
+    /// @name RNG access (needed by VNS support classes)
+    [[nodiscard]] std::mt19937& rng() noexcept { return rng_; }
+    [[nodiscard]] const std::mt19937& rng() const noexcept { return rng_; }
+    //@}
+
+    //@{
+    /// @name Best solution
+    [[nodiscard]] const ISolution* best_solution() const noexcept { return best_solution_.get(); }
+    void set_best_solution(std::unique_ptr<ISolution> sol) noexcept { best_solution_ = std::move(sol); }
+    //@}
+
+    /**
+     * @brief Write output values if the output control is configured.
+     * @param moment The output moment (e.g., "before_evaluation").
+     * @param step The step name for grouped output.
+     */
+    virtual void write_output_values_if_needed(const std::string& moment, const std::string& step);
+
+    /**
+     * @brief Update additional statistics if the control is configured.
+     * @param solution The current solution to consider for statistics.
+     */
+    virtual void update_additional_statistics_if_required(const ISolution& solution);
+
     [[nodiscard]] std::string to_string() const override;
 
 protected:
     std::mt19937 rng_;
+    std::unique_ptr<ISolution> best_solution_;
 
 private:
     FinishControl finish_control_;

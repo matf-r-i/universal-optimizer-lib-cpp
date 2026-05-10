@@ -1,11 +1,13 @@
 ﻿#include "algorithm/metaheuristic/variable_neighborhood_search/VnsOptimizer.hpp"
-#include <random>
 #include <sstream>
 
 namespace uo {
 
 VnsOptimizer::VnsOptimizer(
-    std::vector<std::unique_ptr<SaNeighborhood>> neighborhoods,
+    std::unique_ptr<VnsShakingSupport> vns_shaking_support,
+    std::unique_ptr<VnsLocalSearchSupport> vns_ls_support,
+    int k_min,
+    int k_max,
     FinishControl finish_control,
     std::unique_ptr<Problem> problem,
     std::unique_ptr<ISolution> solution_template,
@@ -20,12 +22,19 @@ VnsOptimizer::VnsOptimizer(
         std::move(output_control),
         random_seed,
         std::move(additional_statistics_control))
-    , neighborhoods_(std::move(neighborhoods)) {}
+    , vns_shaking_support_(std::move(vns_shaking_support))
+    , vns_ls_support_(std::move(vns_ls_support))
+    , k_min_(k_min)
+    , k_max_(k_max) {}
 
 std::unique_ptr<Optimizer> VnsOptimizer::clone() const {
-    std::vector<std::unique_ptr<SaNeighborhood>> cloned_neighborhoods;
+    std::unique_ptr<VnsShakingSupport> vss = vns_shaking_support_ ? vns_shaking_support_->clone() : nullptr;
+    std::unique_ptr<VnsLocalSearchSupport> vls = vns_ls_support_ ? vns_ls_support_->clone() : nullptr;
     return std::make_unique<VnsOptimizer>(
-        std::move(cloned_neighborhoods),
+        std::move(vss),
+        std::move(vls),
+        k_min_,
+        k_max_,
         finish_control(),
         problem().clone(),
         solution_template() ? solution_template()->clone() : nullptr,
@@ -36,48 +45,62 @@ std::unique_ptr<Optimizer> VnsOptimizer::clone() const {
 }
 
 void VnsOptimizer::init() {
-    Metaheuristic::init();
+    // Call Algorithm::init() directly - Metaheuristic::init() is pure virtual
+    Algorithm::init();
+    k_current_ = k_min_;
     if (solution_template()) {
         auto sol = solution_template()->clone();
+        sol->copy_from(*solution_template());
         sol->init_random(problem());
         set_current_solution(std::move(sol));
+        set_evaluation(1);
+        if (current_solution()) {
+            set_best_solution(current_solution()->clone());
+        }
     }
-    set_evaluation(1);
-    set_iteration(0);
-    current_neighborhood_index_ = 0;
 }
 
 void VnsOptimizer::main_loop_iteration() {
-    increment_iteration();
-
-    if (!current_solution() || neighborhoods_.empty()) return;
-
-    // Use current neighborhood to generate neighbor
-    auto& neighborhood = neighborhoods_[current_neighborhood_index_];
-    auto neighbor = neighborhood->generate_neighbor(*current_solution_, problem(), this);
-    if (!neighbor) return;
-
-    neighbor->evaluate(problem());
-
-    auto cmp = current_solution_->is_better_than(*neighbor, problem());
-    bool neighbor_is_better = cmp.has_value() && !cmp.value();
-
-    if (neighbor_is_better) {
-        set_current_solution(std::move(neighbor));
-        current_neighborhood_index_ = 0; // restart from first neighborhood
-    } else {
-        // Move to next neighborhood
-        current_neighborhood_index_ = (current_neighborhood_index_ + 1) % neighborhoods_.size();
+    // Step 1: Shaking phase
+    write_output_values_if_needed("before_step_in_iteration", "shaking");
+    if (!vns_shaking_support_ || 
+        !vns_shaking_support_->shaking(k_current_, problem(), *current_solution_, *this)) {
+        write_output_values_if_needed("after_step_in_iteration", "shaking");
+        return;
     }
-    increment_evaluation();
+    write_output_values_if_needed("after_step_in_iteration", "shaking");
+    
+    increment_iteration();
+    
+    // Step 2: Local search phase (repeat while k_current <= k_max)
+    while (k_current_ <= k_max_) {
+        write_output_values_if_needed("before_step_in_iteration", "ls");
+        bool improvement = false;
+        if (vns_ls_support_) {
+            improvement = vns_ls_support_->local_search(k_current_, problem(), *current_solution_, *this);
+        }
+        write_output_values_if_needed("after_step_in_iteration", "ls");
+        
+        if (improvement) {
+            // Update statistics and reset k
+            update_additional_statistics_if_required(*current_solution_);
+            set_best_solution(current_solution_->clone());
+            k_current_ = k_min_;
+        } else {
+            k_current_ += 1;
+        }
+    }
 }
 
 std::string VnsOptimizer::to_string() const {
     std::ostringstream oss;
     oss << "VnsOptimizer{"
         << SingleSolutionMetaheuristic::to_string()
-        << ", neighborhood_count=" << neighborhoods_.size()
-        << ", current_neighborhood=" << current_neighborhood_index_
+        << ", k_min=" << k_min_
+        << ", k_max=" << k_max_
+        << ", k_current=" << k_current_
+        << ", shaking=" << (vns_shaking_support_ ? vns_shaking_support_->to_string() : "null")
+        << ", ls=" << (vns_ls_support_ ? vns_ls_support_->to_string() : "null")
         << "}";
     return oss.str();
 }

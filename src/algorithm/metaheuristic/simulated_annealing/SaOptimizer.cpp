@@ -39,7 +39,8 @@ std::unique_ptr<Optimizer> SaOptimizer::clone() const {
 }
 
 void SaOptimizer::init() {
-    Metaheuristic::init();
+    // Call Algorithm::init() instead of Metaheuristic::init() which is pure virtual
+    Algorithm::init();
     if (solution_template()) {
         auto sol = solution_template()->clone();
         sol->init_random(problem());

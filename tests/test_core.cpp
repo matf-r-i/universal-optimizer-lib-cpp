@@ -7,9 +7,7 @@
 #include "algorithm/metaheuristic/FinishControl.hpp"
 #include "algorithm/metaheuristic/AdditionalStatisticsControl.hpp"
 
-int main() {
-    std::cout << "=== Universal Optimizer C++ Tests ===" << std::endl;
-
+void test_output_control() {
     // Test OutputControl
     std::cout << "  Testing OutputControl..." << std::flush;
     {
@@ -18,7 +16,9 @@ int main() {
         assert(oc->write_before_algorithm() == false);
         std::cout << " PASS" << std::endl;
     }
+}
 
+void test_finish_control() {
     // Test FinishControl
     std::cout << "  Testing FinishControl..." << std::flush;
     {
@@ -44,7 +44,9 @@ int main() {
         std::cout << " PASS" << std::endl;
         std::cout << "    " << fc.to_string() << std::endl;
     }
+}
 
+void test_additional_statisitcs_control() {
     // Test AdditionalStatisticsControl
     std::cout << "  Testing AdditionalStatisticsControl..." << std::flush;
     {
@@ -64,7 +66,9 @@ int main() {
         std::cout << " PASS" << std::endl;
         std::cout << "    " << asc->to_string() << std::endl;
     }
+}
 
+void test_output_control_with_moments() {
     // Test OutputControl with moments
     std::cout << "  Testing OutputControl moments..." << std::flush;
     {
@@ -77,7 +81,16 @@ int main() {
         assert(oc.write_after_evaluation() == false);
         std::cout << " PASS" << std::endl;
     }
+}
 
+int main() {
+    std::cout << "=== Universal Optimizer C++ Tests ===" << std::endl;
+ 
+    test_output_control();
+    test_finish_control();
+    test_additional_statisitcs_control();
+    test_output_control_with_moments();
+ 
     std::cout << "\nAll tests passed!" << std::endl;
     return 0;
 }
