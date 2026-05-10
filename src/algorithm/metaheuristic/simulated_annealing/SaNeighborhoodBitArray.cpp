@@ -63,6 +63,8 @@ std::unique_ptr<ISolution> SaNeighborhoodBitArray::generate_neighbor(
         if (optimizer) {
             const_cast<Metaheuristic*>(optimizer)->write_output_values_if_needed(
                 "after_evaluation", "a_e");
+            // Increment evaluation counter (matches Python generate_neighbor pattern)
+            const_cast<Metaheuristic*>(optimizer)->increment_evaluation();
         }
 
         return neighbor;
@@ -80,3 +82,4 @@ std::string SaNeighborhoodBitArray::to_string() const {
 }
 
 } // namespace uo
+
