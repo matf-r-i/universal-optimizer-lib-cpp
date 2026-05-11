@@ -5,7 +5,7 @@
 namespace uo {
 
 Metaheuristic::Metaheuristic(
-    FinishControl finish_control,
+    std::unique_ptr<FinishControl> finish_control,
     std::unique_ptr<Problem> problem,
     std::unique_ptr<ISolution> solution_template,
     std::string name,
@@ -41,7 +41,7 @@ std::unique_ptr<ISolution> Metaheuristic::optimize() {
 }
 
 bool Metaheuristic::should_finish() const {
-    return finish_control_.is_finished(evaluation(), iteration(), elapsed_seconds());
+    return finish_control_ && finish_control_->is_finished(evaluation(), iteration(), elapsed_seconds());
 }
 
 void Metaheuristic::write_output_values_if_needed(const std::string& moment, const std::string& step) {
@@ -66,9 +66,10 @@ std::string Metaheuristic::to_string() const {
     oss << "Metaheuristic{"
         << Algorithm::to_string()
         << ", random_seed=" << random_seed_
-        << ", finish_control=" << finish_control_.to_string()
+        << ", finish_control=" << (finish_control_ ? finish_control_->to_string() : "null")
         << "}";
     return oss.str();
 }
 
 } // namespace uo
+

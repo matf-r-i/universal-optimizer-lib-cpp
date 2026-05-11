@@ -8,7 +8,7 @@ VnsOptimizer::VnsOptimizer(
     std::unique_ptr<VnsLocalSearchSupport> vns_ls_support,
     int k_min,
     int k_max,
-    FinishControl finish_control,
+    std::unique_ptr<FinishControl> finish_control,
     std::unique_ptr<Problem> problem,
     std::unique_ptr<ISolution> solution_template,
     std::shared_ptr<OutputControl> output_control,
@@ -35,7 +35,7 @@ std::unique_ptr<Optimizer> VnsOptimizer::clone() const {
         std::move(vls),
         k_min_,
         k_max_,
-        finish_control(),
+        std::make_unique<FinishControl>(finish_control().clone()),
         problem().clone(),
         solution_template() ? solution_template()->clone() : nullptr,
         output_control(),
@@ -106,3 +106,4 @@ std::string VnsOptimizer::to_string() const {
 }
 
 } // namespace uo
+

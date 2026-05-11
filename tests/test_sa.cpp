@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <cassert>
 #include <memory>
 #include <sstream>
@@ -125,7 +125,7 @@ void test_sa_neighborhood_bit_array_generate_neighbor() {
 void test_sa_optimizer_construction() {
     std::cout << "  Testing SaOptimizer construction..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(6);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -145,7 +145,7 @@ void test_sa_optimizer_construction() {
 void test_sa_optimizer_init() {
     std::cout << "  Testing SaOptimizer init..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(8);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -169,7 +169,7 @@ void test_sa_optimizer_init() {
 void test_sa_optimizer_basic_optimize() {
     std::cout << "  Testing SaOptimizer basic optimize..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 50, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 50, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(10);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -196,7 +196,7 @@ void test_sa_optimizer_basic_optimize() {
 void test_sa_optimizer_clone() {
     std::cout << "  Testing SaOptimizer clone..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(6);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -210,8 +210,6 @@ void test_sa_optimizer_clone() {
 
         auto cloned = sa->clone();
         assert(cloned != nullptr);
-        // Actually since our clone returns an empty neighborhood/temperature
-        // due to missing clone methods, just verify it's not null
         assert(cloned->name() == "sa");
 
         std::cout << " PASS" << std::endl;
@@ -221,7 +219,7 @@ void test_sa_optimizer_clone() {
 void test_sa_optimizer_with_temp_const() {
     std::cout << "  Testing SaOptimizer with constant temperature..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 30, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 30, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(6);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -247,7 +245,7 @@ void test_sa_optimizer_with_temp_const() {
 void test_sa_optimizer_with_temp_exponential() {
     std::cout << "  Testing SaOptimizer with exponential temperature..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 30, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 30, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(6);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -272,7 +270,7 @@ void test_sa_optimizer_with_temp_exponential() {
 void test_sa_optimizer_to_string() {
     std::cout << "  Testing SaOptimizer to_string..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(6);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -296,7 +294,7 @@ void test_sa_optimizer_to_string() {
 void test_sa_optimizer_with_k2() {
     std::cout << "  Testing SaOptimizer with k=2 neighborhood..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 30, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 30, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(8);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -343,3 +341,4 @@ int main() {
     std::cout << "\nAll SA tests passed!" << std::endl;
     return 0;
 }
+

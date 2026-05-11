@@ -15,7 +15,7 @@ namespace uo {
 class Metaheuristic : public Algorithm {
 public:
     explicit Metaheuristic(
-        FinishControl finish_control,
+        std::unique_ptr<FinishControl> finish_control,
         std::unique_ptr<Problem> problem,
         std::unique_ptr<ISolution> solution_template,
         std::string name,
@@ -37,8 +37,8 @@ public:
     virtual void main_loop();
     std::unique_ptr<ISolution> optimize() override;
 
-    [[nodiscard]] const FinishControl& finish_control() const noexcept { return finish_control_; }
-    void set_finish_control(const FinishControl& fc) noexcept { finish_control_ = fc.clone(); }
+    [[nodiscard]] const FinishControl& finish_control() const noexcept { return *finish_control_; }
+    void set_finish_control(std::unique_ptr<FinishControl> fc) noexcept { finish_control_ = std::move(fc); }
 
     [[nodiscard]] int random_seed() const noexcept { return random_seed_; }
     void set_random_seed(int seed) noexcept { random_seed_ = seed; rng_.seed(seed); }
@@ -84,7 +84,7 @@ protected:
     std::unique_ptr<ISolution> best_solution_;
 
 private:
-    FinishControl finish_control_;
+    std::unique_ptr<FinishControl> finish_control_;
     int random_seed_;
     std::shared_ptr<AdditionalStatisticsControl> additional_statistics_control_;
 };
@@ -92,3 +92,4 @@ private:
 } // namespace uo
 
 #endif // UO_ALGORITHM_METAHEURISTIC_HPP
+

@@ -12,7 +12,7 @@ std::unique_ptr<Optimizer> GaOptimizerSteadyState::clone() const {
         ga_selection_ ? ga_selection_->clone() : nullptr,
         population_size_,
         elite_count_,
-        finish_control(),
+        std::make_unique<FinishControl>(finish_control().clone()),
         problem().clone(),
         solution_template() ? solution_template()->clone() : nullptr,
         output_control(),

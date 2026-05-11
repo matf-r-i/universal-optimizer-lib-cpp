@@ -24,7 +24,7 @@ public:
         std::unique_ptr<GaSelection> ga_selection,
         int population_size,
         int elite_count,
-        FinishControl finish_control,
+        std::unique_ptr<FinishControl> finish_control,
         std::unique_ptr<Problem> problem,
         std::unique_ptr<ISolution> solution_tmpl,
         std::shared_ptr<OutputControl> output_control = nullptr,

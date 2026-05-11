@@ -8,7 +8,7 @@ namespace uo {
 SaOptimizer::SaOptimizer(
     std::unique_ptr<SaNeighborhood> sa_neighborhood,
     std::unique_ptr<SaTemperature> sa_temperature,
-    FinishControl finish_control,
+    std::unique_ptr<FinishControl> finish_control,
     std::unique_ptr<Problem> problem,
     std::unique_ptr<ISolution> solution_template,
     std::shared_ptr<OutputControl> output_control,
@@ -33,7 +33,7 @@ std::unique_ptr<Optimizer> SaOptimizer::clone() const {
     return std::make_unique<SaOptimizer>(
         std::move(cloned_neighborhood),
         std::move(cloned_temperature),
-        finish_control(),
+        std::make_unique<FinishControl>(finish_control().clone()),
         problem().clone(),
         solution_template() ? solution_template()->clone() : nullptr,
         output_control(),
@@ -104,3 +104,4 @@ std::string SaOptimizer::to_string() const {
 }
 
 } // namespace uo
+

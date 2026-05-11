@@ -29,7 +29,7 @@ public:
         std::unique_ptr<VnsLocalSearchSupport> vns_ls_support,
         int k_min,
         int k_max,
-        FinishControl finish_control,
+        std::unique_ptr<FinishControl> finish_control,
         std::unique_ptr<Problem> problem,
         std::unique_ptr<ISolution> solution_template,
         std::shared_ptr<OutputControl> output_control = nullptr,

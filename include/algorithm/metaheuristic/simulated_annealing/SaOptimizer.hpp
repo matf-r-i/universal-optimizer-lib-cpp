@@ -15,7 +15,7 @@ public:
     explicit SaOptimizer(
         std::unique_ptr<SaNeighborhood> sa_neighborhood,
         std::unique_ptr<SaTemperature> sa_temperature,
-        FinishControl finish_control,
+        std::unique_ptr<FinishControl> finish_control,
         std::unique_ptr<Problem> problem,
         std::unique_ptr<ISolution> solution_template,
         std::shared_ptr<OutputControl> output_control = nullptr,

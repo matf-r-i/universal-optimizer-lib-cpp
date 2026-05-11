@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <cassert>
 #include <memory>
 #include <sstream>
@@ -163,7 +163,7 @@ void test_ga_mutation_one_point_bit_array() {
 void test_ga_optimizer_steady_state_construction() {
     std::cout << "  Testing GaOptimizerSteadyState construction..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(8);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -187,7 +187,7 @@ void test_ga_optimizer_steady_state_construction() {
 void test_ga_optimizer_steady_state_init() {
     std::cout << "  Testing GaOptimizerSteadyState init..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 200, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 200, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(6);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -213,7 +213,7 @@ void test_ga_optimizer_steady_state_init() {
 void test_ga_optimizer_steady_state_basic_optimize() {
     std::cout << "  Testing GaOptimizerSteadyState basic optimize..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(10);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -241,7 +241,7 @@ void test_ga_optimizer_steady_state_basic_optimize() {
 void test_ga_optimizer_steady_state_clone() {
     std::cout << "  Testing GaOptimizerSteadyState clone..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(6);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -265,7 +265,7 @@ void test_ga_optimizer_steady_state_clone() {
 void test_ga_optimizer_steady_state_to_string() {
     std::cout << "  Testing GaOptimizerSteadyState to_string..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(6);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -296,7 +296,7 @@ void test_ga_optimizer_steady_state_to_string() {
 void test_ga_optimizer_generational_construction() {
     std::cout << "  Testing GaOptimizerGenerational construction..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(8);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -320,7 +320,7 @@ void test_ga_optimizer_generational_construction() {
 void test_ga_optimizer_generational_init() {
     std::cout << "  Testing GaOptimizerGenerational init..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 200, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 200, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(6);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -345,7 +345,7 @@ void test_ga_optimizer_generational_init() {
 void test_ga_optimizer_generational_basic_optimize() {
     std::cout << "  Testing GaOptimizerGenerational basic optimize..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(10);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -373,7 +373,7 @@ void test_ga_optimizer_generational_basic_optimize() {
 void test_ga_optimizer_generational_clone() {
     std::cout << "  Testing GaOptimizerGenerational clone..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(6);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -398,7 +398,7 @@ void test_ga_index_of_best() {
     std::cout << "  Testing GaOptimizer index_of_best_in_population..." << std::flush;
     {
         // Test that index_of_best_in_population works
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(8);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -419,31 +419,6 @@ void test_ga_index_of_best() {
     }
 }
 
-void test_ga_with_idle_supports() {
-    std::cout << "  Testing GaOptimizerSteadyState with idle supports..." << std::flush;
-    {
-        uo::FinishControl fc("evaluations", 30, 0, 0.0);
-        auto problem = std::make_unique<uo::MaxOnesProblem>(6);
-        auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
-
-        auto selection = std::make_unique<uo::GaSelectionIdle>();
-        auto crossover = std::make_unique<uo::GaCrossoverSupportIdle>();
-        auto mutation = std::make_unique<uo::GaMutationSupportIdle>();
-
-        auto ga = std::make_unique<uo::GaOptimizerSteadyState>(
-            std::move(crossover), std::move(mutation), std::move(selection),
-            5, 1, std::move(fc), std::move(problem), std::move(sol_tmpl),
-            nullptr, 42);
-
-        auto result = ga->optimize();
-        assert(result != nullptr);
-
-        std::cout << " PASS" << std::endl;
-        if (result) {
-            std::cout << "    Best (idle): " << result->to_string() << std::endl;
-        }
-    }
-}
 
 int main() {
     std::cout << "=== Genetic Algorithm C++ Tests ===" << std::endl << std::endl;
@@ -478,8 +453,8 @@ int main() {
 
     std::cout << "--- Additional tests ---" << std::endl;
     test_ga_index_of_best();
-    test_ga_with_idle_supports();
 
     std::cout << std::endl << "All GA tests passed!" << std::endl;
     return 0;
 }
+

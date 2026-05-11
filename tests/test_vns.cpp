@@ -30,7 +30,6 @@ void test_complex_counter() {
         assert(state[1] == 1);
         assert(state[2] == 2);
 
-        // Test progression through combinations
         ok = cc.progress();
         assert(ok == true);
         state = cc.current_state();
@@ -38,14 +37,12 @@ void test_complex_counter() {
         assert(state[1] == 1);
         assert(state[2] == 3);
 
-        // Progress a few steps
         for (int i = 0; i < 5; ++i) cc.progress();
         state = cc.current_state();
 
-        // Test that dimension check works
         try {
             uo::ComplexCounterUniformAscending bad(6, 3);
-            assert(false); // should not reach here
+            assert(false);
         } catch (const std::invalid_argument&) {
             // expected
         }
@@ -127,7 +124,7 @@ void test_vns_ls_support_bi_bit_array() {
 void test_vns_optimizer_construction() {
     std::cout << "  Testing VnsOptimizer construction..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(6);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -151,7 +148,7 @@ void test_vns_optimizer_construction() {
 void test_vns_optimizer_init() {
     std::cout << "  Testing VnsOptimizer init..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 100, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 100, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(8);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
@@ -173,7 +170,7 @@ void test_vns_optimizer_init() {
 void test_vns_optimizer_basic_optimize() {
     std::cout << "  Testing VnsOptimizer basic optimize..." << std::flush;
     {
-        uo::FinishControl fc("evaluations", 50, 0, 0.0);
+        auto fc = std::make_unique<uo::FinishControl>("evaluations", 50, 0, 0.0);
         auto problem = std::make_unique<uo::MaxOnesProblem>(10);
         auto sol_tmpl = std::make_unique<uo::BitArraySolution>();
 
