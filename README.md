@@ -1,10 +1,10 @@
-﻿# Universal Optimizer Library (C++)
+# Universal Optimizer Library (C++)
 
 C++ implementation of the Universal Optimizer Library, ported from the Python version.
 
 ## Project Structure
 
-```
+```text
 ├── include/          # Public headers (*.hpp)
 │   ├── algorithm/    # Algorithm classes
 │   │   ├── exact/    # Exact algorithms (e.g., Total Enumeration)
@@ -24,28 +24,71 @@ C++ implementation of the Universal Optimizer Library, ported from the Python ve
 ## Building
 
 ### Prerequisites
+
 - C++20 compatible compiler (g++ >= 11, clang >= 14, MSVC 2022)
 - GNU Make
 
 ### Build Library
+
 ```bash
 make
 ```
 
 ### Build and Run Tests
+
 ```bash
 make test
 ```
 
 ### Clean Build Artifacts
+
 ```bash
 make clean
 make distclean    # Also removes documentation
 ```
 
+## Cmake Build Instructions
+
+### Create build directory
+
+```bash
+mkdir build && cd build
+```
+
+### Configure and build
+
+```bash
+cmake ..
+cmake --build .
+```
+
+### Run tests
+
+```bash
+ctest
+```
+
+### Generate documentation
+
+```bash
+cmake --build . --target docs
+```
+
+### Format code
+
+```bash
+cmake --build . --target format
+```
+
+### Install library
+
+```bash
+cmake --install .
+```
+
 ## Class Hierarchy
 
-```
+```bash
 Optimizer
 └── Algorithm
     ├── Metaheuristic

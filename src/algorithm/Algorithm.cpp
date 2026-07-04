@@ -1,4 +1,4 @@
-﻿#include "algorithm/Algorithm.hpp"
+#include "algorithm/Algorithm.hpp"
 #include <sstream>
 
 namespace uo {
